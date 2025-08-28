@@ -57,6 +57,7 @@
 
     <!-- Action buttons -->
     <div class="d-flex justify-content-end gap-2 mt-3">
+      {% if object.author.pk == request.user.pk %}
       <a href="{% url 'tracker_edit' object.pk %}" class="btn btn-sm btn-primary">Edit</a>
       <form action="{% url 'tracker_delete' object.pk %}" method="post" style="display:inline;">
         {% csrf_token %}
@@ -65,6 +66,7 @@
           Delete
         </button>
       </form>
+        {% endif %}
       <a href="{% url 'tracker_list' %}" class="btn btn-sm btn-secondary">Back</a>
     </div>
   </div>
