@@ -1,7 +1,17 @@
 from django.urls import path
 
-from .views import TrackerListView
+from .views import (
+    TrackerListView,
+    TrackerDetailView,
+    TrackerUpdateView,
+    TrackerDeleteView,
+    TrackerCreateView,
+)
 
 urlpatterns = [
+    path("<int:pk>/", TrackerDetailView.as_view(), name="tracker_detail"),
+    path("<int:pk>/edit/", TrackerUpdateView.as_view(), name="tracker_edit"),
+    path("<int:pk>/delete/", TrackerDeleteView.as_view(), name="tracker_delete"),
+    path("new/", TrackerCreateView.as_view(), name="tracker_new"),
     path("", TrackerListView.as_view(), name="tracker_list"),
 ]

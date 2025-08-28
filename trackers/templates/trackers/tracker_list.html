@@ -24,7 +24,7 @@
         {% for bug in tracker_list %}
         <tr>
           <td>
-            <a href="#" class="fw-bold text-decoration-none">
+            <a href="{{ bug.get_absolute_url }}" class="fw-bold text-decoration-none">
               {{ bug.title }}
             </a>
           </td>

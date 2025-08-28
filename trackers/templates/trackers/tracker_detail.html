@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block main %}
+<h2 class="my-4">Tracker Details</h2>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h4 class="card-title fw-bold">{{ object.title }}</h4>
+    <p class="card-text text-muted">{{ object.body }}</p>
+
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th scope="row">Priority</th>
+          <td>
+            {% if object.priority == "high" %}
+              <span class="badge bg-danger">{{ object.get_priority_display }}</span>
+            {% elif object.priority == "normal" %}
+              <span class="badge bg-warning text-dark">{{ object.get_priority_display }}</span>
+            {% else %}
+              <span class="badge bg-success">{{ object.get_priority_display }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Status</th>
+          <td>
+            {% if object.status == "in_progress" %}
+              <span class="badge bg-primary">{{ object.get_status_display }}</span>
+            {% elif object.status == "done" %}
+              <span class="badge bg-success">{{ object.get_status_display }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ object.get_status_display }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Author</th>
+          <td>{{ object.author.username }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Assigned To</th>
+          <td>{{ object.assigned_to.username|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Created</th>
+          <td>{{ object.date|date:"M d, Y h:i A" }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Updated</th>
+          <td>{{ object.updated_at|date:"M d, Y h:i A" }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Action buttons -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <a href="{% url 'tracker_edit' object.pk %}" class="btn btn-sm btn-primary">Edit</a>
+      <form action="{% url 'tracker_delete' object.pk %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to delete this tracker?');">
+          Delete
+        </button>
+      </form>
+      <a href="{% url 'tracker_list' %}" class="btn btn-sm btn-secondary">Back</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
