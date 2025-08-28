@@ -3,21 +3,51 @@
 {% block title %}Home{% endblock %}
 
 {% block main %}
-<h1>Plain Tracker</h1><hr>
-{% if user.is_authenticated %}
-<p>Hi {{ user.username }}!</p>
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Log Out</button>
-</form>
-<br>
-<p>
-    <a href="{% url 'tracker_list' %}" role="button" class="btn btn-primary">View all articles</a>
-</p>
-{% else %}
-<p>You're not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-<a href="{% url 'signup' %}">Sign Up</a>
-{% endif %}
+<div class="py-5 text-center bg-light rounded-3 shadow-sm mb-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Plain Tracker</h1>
+        <p class="lead mb-4">
+            A simple and efficient issue tracking system for your projects.
+        </p>
+        {% if user.is_authenticated %}
+            <p class="mb-4">Hi <span class="fw-bold">{{ user.username }}</span>! Ready to track some issues?</p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a href="{% url 'tracker_list' %}" class="btn btn-primary btn-lg">View Issues</a>
+                <a href="{% url 'tracker_new' %}" class="btn btn-outline-primary btn-lg">Create New Issue</a>
+            </div>
+        {% else %}
+            <p class="mb-4">Please log in or sign up to start tracking your issues.</p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">Log In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Sign Up</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
 
+<div class="container">
+    <!-- Optional Info / Tips Section -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">How to Use</h5>
+                    <p class="card-text">
+                        Create issues for your projects, assign them to team members, and track their progress.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Tips</h5>
+                    <p class="card-text">
+                        Use priorities and statuses to keep your workflow organized. Comment on issues to communicate with your team.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
