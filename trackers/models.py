@@ -48,3 +48,22 @@ class Tracker(models.Model):
 
     def get_absolute_url(self):
         return reverse("tracker_detail", kwargs={"pk": self.pk})
+
+
+class Comment(models.Model):
+    trackers = models.ForeignKey(
+        "Tracker",
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.body
+
+    def get_absolute_url(self):
+        return reverse("tracker_detail", kwargs={"pk": self.tracker.pk})

@@ -1,9 +1,17 @@
 from django.contrib import admin
 
-from .models import Tracker
+from .models import Tracker, Comment
+
+
+class CommentInLine(admin.TabularInline):
+    model = Comment
+    extra = 0
 
 
 class TrackerAdmin(admin.ModelAdmin):
+    inlines = [
+        CommentInLine,
+    ]
     list_display = [
         "title",
         "body",
@@ -18,3 +26,4 @@ class TrackerAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Tracker, TrackerAdmin)
+admin.site.register(Comment)
