@@ -11,25 +11,33 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env(DEBUG=(bool, False))
+
+environ.Env.read_env(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-7jv%pag33qh5552j6l*9n-p8tb*3ta-2$@jvz(a9^25_2fn1%t"
+# SECRET_KEY = "django-insecure-7jv%pag33qh5552j6l*9n-p8tb*3ta-2$@jvz(a9^25_2fn1%t"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = [
-    "cengkadakcengkudu.pythonanywhere.com",
-    "127.0.0.1",
-    "localhost",
-]
+# ALLOWED_HOSTS = [
+#     "cengkadakcengkudu.pythonanywhere.com",
+#     "127.0.0.1",
+#     "localhost",
+# ]
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -85,11 +93,14 @@ WSGI_APPLICATION = "plain_tracker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": env.db(),
 }
 
 
@@ -153,4 +164,5 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # email setup
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = env("EMAIL_BACKEND")
