@@ -5,92 +5,75 @@
 {% block main %}
 <h2 class="my-4">Issue Tracker</h2>
 
-<div class="card shadow-sm">
+{% for bug in tracker_list %}
+<div class="card mb-4 shadow-sm">
   <div class="card-body">
-    <table class="table table-hover align-middle">
-      <thead class="table-light">
-        <tr>
-          <th scope="col">Title</th>
-          <th scope="col">Description</th>
-          <th scope="col">Priority</th>
-          <th scope="col">Status</th>
-          <th scope="col">Author</th>
-          <th scope="col">Assigned To</th>
-          <th scope="col">Created</th>
-          <th scope="col">Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for bug in tracker_list %}
-        <tr>
-          <td>
-            <a href="{{ bug.get_absolute_url }}" class="fw-bold text-decoration-none">
-              {{ bug.title }}
-            </a>
-          </td>
-          <td>{{ bug.body|truncatechars:50 }}</td>
-          
-          <!-- Priority with Bootstrap badge colors -->
-          <td>
-            {% if bug.priority == "high" %}
-              <span class="badge bg-danger">{{ bug.get_priority_display }}</span>
-            {% elif bug.priority == "normal" %}
-              <span class="badge bg-warning text-dark">{{ bug.get_priority_display }}</span>
-            {% else %}
-              <span class="badge bg-success">{{ bug.get_priority_display }}</span>
-            {% endif %}
-          </td>
+    <!-- Title -->
+    <h5 class="card-title">
+      <a href="{{ bug.get_absolute_url }}" class="fw-bold text-decoration-none">
+        {{ bug.title|title }}
+      </a>
+    </h5>
 
-          <!-- Status with Bootstrap badge colors -->
-          <td>
-            {% if bug.status == "in_progress" %}
-              <span class="badge bg-primary">{{ bug.get_status_display }}</span>
-            {% elif bug.status == "done" %}
-              <span class="badge bg-success">{{ bug.get_status_display }}</span>
-            {% else %}
-              <span class="badge bg-secondary">{{ bug.get_status_display }}</span>
-            {% endif %}
-          </td>
+    <!-- Description -->
+    <p class="card-text text-muted">{{ bug.body|truncatechars:100 }}</p>
 
-          <td>{{ bug.author.username }}</td>
-          <td>{{ bug.assigned_to.username|default:"-" }}</td>
-          <td>{{ bug.date|date:"M d, Y H:i" }}</td>
-          <td>{{ bug.updated_at|date:"M d, Y H:i" }}</td>
-        </tr>
+    <!-- Metadata -->
+    <div class="mb-2">
+      <!-- Priority Badge -->
+      {% if bug.priority == "high" %}
+        <span class="badge bg-danger">{{ bug.get_priority_display }}</span>
+      {% elif bug.priority == "normal" %}
+        <span class="badge bg-warning text-dark">{{ bug.get_priority_display }}</span>
+      {% else %}
+        <span class="badge bg-success">{{ bug.get_priority_display }}</span>
+      {% endif %}
 
-        <!-- Comment Section + Actions -->
-        <tr>
-          <td colspan="8">
-            <div class="card-footer bg-light">
-              <h6 class="fw-bold mb-2">Comments</h6>
-              {% for comment in bug.comment_set.all %}
-                <p class="mb-1">
-                  <span class="fw-bold">{{ comment.author.username }}</span> · 
-                  <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small><br>
-                  {{ comment.body }}
-                </p>
-              {% empty %}
-                <p class="text-muted">No comments yet.</p>
-              {% endfor %}
+      <!-- Status Badge -->
+      {% if bug.status == "in_progress" %}
+        <span class="badge bg-primary">{{ bug.get_status_display }}</span>
+      {% elif bug.status == "done" %}
+        <span class="badge bg-success">{{ bug.get_status_display }}</span>
+      {% elif bug.status == "dropped" %}
+        <span class="badge bg-dark">{{ bug.get_status_display }}</span>
+      {% else %}
+        <span class="badge bg-secondary">{{ bug.get_status_display }}</span>
+      {% endif %}
+    </div>
 
-              <!-- Actions -->
-              <div class="mt-2">
-                {% if bug.author.pk == request.user.pk %}
-                  <a href="{% url 'tracker_edit' bug.pk %}" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="{% url 'tracker_delete' bug.pk %}" class="btn btn-sm btn-danger">Delete</a>
-                {% endif %}
-                <a href="{{ bug.get_absolute_url }}" class="btn btn-sm btn-secondary">New Comment</a>
-              </div>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8" class="text-center text-muted py-4">No issues found.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <small class="text-muted">
+      Author: {{ bug.author.username }} |
+      Assigned To: {{ bug.assigned_to.username|default:"-" }} |
+      Created: {{ bug.date|date:"M d, Y H:i" }} |
+      Updated: {{ bug.updated_at|date:"M d, Y H:i" }}
+    </small>
+
+    <hr>
+
+    <!-- Comments -->
+    <h6 class="fw-bold mb-2">Comments</h6>
+    {% for comment in bug.comment_set.all %}
+      <div class="mb-2">
+        <span class="fw-bold">{{ comment.author.username }}</span>
+        <small class="text-muted">· {{ comment.created_at|date:"M d, Y H:i" }}</small><br>
+        {{ comment.body }}
+      </div>
+    {% empty %}
+      <p class="text-muted">No comments yet.</p>
+    {% endfor %}
+
+    <!-- Actions -->
+    <div class="mt-3">
+      {% if bug.author.pk == request.user.pk %}
+        <a href="{% url 'tracker_edit' bug.pk %}" class="btn btn-sm btn-primary">Edit</a>
+        <a href="{% url 'tracker_delete' bug.pk %}" class="btn btn-sm btn-danger">Delete</a>
+      {% endif %}
+      <a href="{{ bug.get_absolute_url }}" class="btn btn-sm btn-secondary">New Comment</a>
+    </div>
   </div>
 </div>
+{% empty %}
+  <p class="text-center text-muted">No issues found.</p>
+{% endfor %}
+
 {% endblock %}

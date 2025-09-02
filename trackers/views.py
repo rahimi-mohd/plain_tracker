@@ -15,6 +15,9 @@ class TrackerListView(LoginRequiredMixin, ListView):
     model = Tracker
     template_name = "trackers/tracker_list.html"
 
+    def get_queryset(self):
+        return Tracker.objects.exclude(status="drop")
+
 
 class CommentGet(LoginRequiredMixin, DetailView):
     model = Tracker
@@ -99,5 +102,21 @@ class MyTrackerListView(ListView):
 
     def get_queryset(self):
         return Tracker.objects.filter(
-            Q(author=self.request.user) | Q(assigned_to=self.request.user)
+            (Q(author=self.request.user) | Q(assigned_to=self.request.user))
+            & ~Q(status="drop")
         )
+
+
+class DroppedListView(ListView):
+    model = Tracker
+    template_name = "tracker/dropped_tracker.html"
+
+    def get_queryset(self):
+        base_dropped = Tracker.objects.filter(status="drop")
+
+        if self.request.user.is_staff:
+            return base_dropped
+        else:
+            return base_dropped.filter(
+                Q(author=self.request.user) | Q(assigned_to=self.request.user)
+            )

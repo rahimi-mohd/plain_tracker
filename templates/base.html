@@ -20,12 +20,18 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <!-- Left side links -->
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'about' %}">About</a>
-                        </li>
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'my_tracker' %}">Mine</a>
+                                <a class="nav-link" href="{% url 'tracker_list' %}">All Issues</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'my_tracker' %}">My Issues</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dropped_tracker' %}">Dropped Issues</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-semibold" href="{% url 'tracker_new' %}">+ New Issue</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -39,6 +45,10 @@
                                     {{ user.username }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'about' %}">About</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
                                     </li>
