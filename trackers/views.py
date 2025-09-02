@@ -4,6 +4,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
+from django.db.models import Q
 
 from .models import Tracker
 from .forms import CommentForm
@@ -90,3 +91,13 @@ class TrackerCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.instance.status = "Open"
         return super().form_valid(form)
+
+
+class MyTrackerListView(ListView):
+    model = Tracker
+    template_name = "tracker/my_tracker.html"
+
+    def get_queryset(self):
+        return Tracker.objects.filter(
+            Q(author=self.request.user) | Q(assigned_to=self.request.user)
+        )

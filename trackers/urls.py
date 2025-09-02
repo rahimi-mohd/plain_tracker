@@ -6,6 +6,7 @@ from .views import (
     TrackerUpdateView,
     TrackerDeleteView,
     TrackerCreateView,
+    MyTrackerListView,
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path("<int:pk>/delete/", TrackerDeleteView.as_view(), name="tracker_delete"),
     path("new/", TrackerCreateView.as_view(), name="tracker_new"),
     path("", TrackerListView.as_view(), name="tracker_list"),
+    path("my_tracker/", MyTrackerListView.as_view(), name="my_tracker"),
 ]
