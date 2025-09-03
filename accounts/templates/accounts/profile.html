@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block main %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <!-- Profile card -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body d-flex align-items-center">
+        <!-- Profile picture -->
+        <div class="me-4 text-center">
+          {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" alt="Profile Picture"
+                 class="rounded-circle border shadow-sm"
+                 style="width: 120px; height: 120px; object-fit: cover;">
+          {% else %}
+            <!-- Placeholder avatar -->
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                 style="width: 120px; height: 120px; font-size: 2rem;">
+              {{ user.username|first|upper }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- User details (aligned with dl/dt/dd) -->
+        <div class="flex-grow-1">
+          <h4 class="fw-bold mb-3">{{ user.username|title }}</h4>
+          <dl class="row mb-0">
+            <dt class="col-4 fw-bold">Email</dt>
+            <dd class="col-8">{{ user.email }}</dd>
+
+            <dt class="col-4 fw-bold">First Name</dt>
+            <dd class="col-8">{{ user.first_name|default:"-"|title }}</dd>
+
+            <dt class="col-4 fw-bold">Last Name</dt>
+            <dd class="col-8">{{ user.last_name|default:"-"|title }}</dd>
+
+            <dt class="col-4 fw-bold">Age</dt>
+            <dd class="col-8">{{ user.age|default:"-" }}</dd>
+
+            <dt class="col-4 fw-bold">Joined</dt>
+            <dd class="col-8">{{ user.date_joined|date:"M d, Y H:i" }}</dd>
+
+            <dt class="col-4 fw-bold">Last Login</dt>
+            <dd class="col-8">{{ user.last_login|date:"M d, Y H:i" }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task stats cards -->
+    <div class="row text-center">
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-primary">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Active</h5>
+            <p class="display-6 fw-bold text-primary">{{ active_count }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-success">
+          <div class="card-body">
+            <h5 class="card-title text-success">Completed</h5>
+            <p class="display-6 fw-bold text-success">{{ done_count }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-dark">
+          <div class="card-body">
+            <h5 class="card-title text-dark">Dropped</h5>
+            <p class="display-6 fw-bold text-dark">{{ dropped_count }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

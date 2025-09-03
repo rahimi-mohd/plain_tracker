@@ -98,7 +98,7 @@ class TrackerCreateView(LoginRequiredMixin, CreateView):
 
 class MyTrackerListView(ListView):
     model = Tracker
-    template_name = "tracker/my_tracker.html"
+    template_name = "trackers/my_tracker.html"
 
     def get_queryset(self):
         return Tracker.objects.filter(
@@ -109,7 +109,7 @@ class MyTrackerListView(ListView):
 
 class DroppedListView(ListView):
     model = Tracker
-    template_name = "tracker/dropped_tracker.html"
+    template_name = "trackers/dropped_tracker.html"
 
     def get_queryset(self):
         base_dropped = Tracker.objects.filter(status="drop")

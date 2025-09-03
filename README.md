@@ -23,7 +23,7 @@ EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 ```
 **NOTE**: You have to change your SECRET_KEY, add your ALLOWED_HOST and DATABASE_URL if you're deploying.   
 
-4. Run `python manage.py collectstatics` to collect all static data like css/js/etc.
+4. Run `python manage.py collectstatic` to collect all static data like css/js/etc.
 5. Run `python manage.py makemigrations` and then `python manage.py migrate` to record migrations and migrate database.
 6. Run `python manage.py runserver` to activate/run server.  
 
