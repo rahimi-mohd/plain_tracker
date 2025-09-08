@@ -1,4 +1,5 @@
 from django.views import View
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
@@ -6,8 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 
-from .models import Tracker
-from .forms import CommentForm
+from .models import Tracker, TrackerImage
+from .forms import CommentForm, TrackerForm, TrackerImageFormSet
 
 
 # Create your views here.
@@ -82,18 +83,40 @@ class TrackerDeleteView(LoginRequiredMixin, DeleteView):
 
 class TrackerCreateView(LoginRequiredMixin, CreateView):
     model = Tracker
+    form_class = TrackerForm
     template_name = "trackers/tracker_new.html"
-    fields = (
-        "title",
-        "body",
-        "priority",
-        "assigned_to",
-    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context["image_formset"] = TrackerImageFormSet(
+                self.request.POST,
+                self.request.FILES,
+                queryset=TrackerImage.objects.none(),
+            )
+        else:
+            context["image_formset"] = TrackerImageFormSet(
+                queryset=TrackerImage.objects.none()
+            )
+        return context
 
     def form_valid(self, form):
+        context = self.get_context_data()
+        image_formset = context["image_formset"]
         form.instance.author = self.request.user
-        form.instance.status = "Open"
-        return super().form_valid(form)
+        form.instance.status = "in_progress"
+
+        if form.is_valid() and image_formset.is_valid():
+            self.object = form.save()
+
+            for image_form in image_formset:
+                if image_form.cleaned_data.get("image"):
+                    TrackerImage.objects.create(
+                        tracker=self.object, image=image_form.cleaned_data["image"]
+                    )
+            return redirect(self.object.get_absolute_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 
 class MyTrackerListView(ListView):

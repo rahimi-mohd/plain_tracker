@@ -17,6 +17,7 @@ class Tracker(models.Model):
         ("drop", "Drop"),
     ]
 
+    tracker_id = models.CharField(max_length=20, unique=True, editable=False)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -43,6 +44,12 @@ class Tracker(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.tracker_id:
+            last_id = Tracker.objects.all().count() + 1
+            self.tracker_id = f"PT{last_id:05d}"
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
@@ -50,8 +57,18 @@ class Tracker(models.Model):
         return reverse("tracker_detail", kwargs={"pk": self.pk})
 
 
+class TrackerImage(models.Model):
+    tracker = models.ForeignKey(
+        "Tracker",
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to="tracker_images/")
+    upload_at = models.DateTimeField(auto_now_add=True)
+
+
 class Comment(models.Model):
-    trackers = models.ForeignKey(
+    tracker = models.ForeignKey(
         "Tracker",
         on_delete=models.CASCADE,
     )

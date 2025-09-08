@@ -60,6 +60,22 @@
         </tbody>
       </table>
 
+      <!-- Attachments Section -->
+      <h5 class="mt-4">Attachments</h5>
+      {% if object.images.all %}
+        <div class="row">
+          {% for image in object.images.all %}
+            <div class="col-md-3 col-sm-4 col-6 mb-3">
+              <a href="{{ image.image.url }}" target="_blank">
+                <img src="{{ image.image.url }}" class="img-fluid rounded shadow-sm">
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted fst-italic">No images uploaded for this tracker.</p>
+      {% endif %}
+
       <!-- Action buttons -->
       <div class="d-flex justify-content-end gap-2 mt-4">
         {% if object.author.pk == request.user.pk %}
