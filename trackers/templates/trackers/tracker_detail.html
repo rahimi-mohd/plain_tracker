@@ -20,49 +20,31 @@
           <tr>
             <th class="w-25">Priority</th>
             <td>
-              {% if object.priority == "high" %}
-                <span class="badge bg-danger">{{ object.get_priority_display }}</span>
-              {% elif object.priority == "normal" %}
-                <span class="badge bg-warning text-dark">{{ object.get_priority_display }}</span>
-              {% else %}
-                <span class="badge bg-success">{{ object.get_priority_display }}</span>
-              {% endif %}
+              <span class="badge 
+                  {% if object.priority == 'high' %}bg-danger{% elif object.priority == 'normal' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                {{ object.get_priority_display }}
+              </span>
             </td>
           </tr>
           <tr>
             <th>Status</th>
             <td>
-              {% if object.status == "in_progress" %}
-                <span class="badge bg-primary">{{ object.get_status_display }}</span>
-              {% elif object.status == "done" %}
-                <span class="badge bg-success">{{ object.get_status_display }}</span>
-              {% else %}
-                <span class="badge bg-secondary">{{ object.get_status_display }}</span>
-              {% endif %}
+              <span class="badge 
+                  {% if object.status == 'in_progress' %}bg-primary{% elif object.status == 'done' %}bg-success{% elif object.status == 'drop' %}bg-dark{% else %}bg-secondary{% endif %}">
+                {{ object.get_status_display }}
+              </span>
             </td>
           </tr>
-          <tr>
-            <th>Author</th>
-            <td>{{ object.author.username }}</td>
-          </tr>
-          <tr>
-            <th>Assigned To</th>
-            <td>{{ object.assigned_to.username|default:"-" }}</td>
-          </tr>
-          <tr>
-            <th>Created</th>
-            <td>{{ object.date|date:"M d, Y h:i A" }}</td>
-          </tr>
-          <tr>
-            <th>Last Updated</th>
-            <td>{{ object.updated_at|date:"M d, Y h:i A" }}</td>
-          </tr>
+          <tr><th>Author</th><td>{{ object.author.username }}</td></tr>
+          <tr><th>Assigned To</th><td>{{ object.assigned_to.username|default:"-" }}</td></tr>
+          <tr><th>Created</th><td>{{ object.date|date:"M d, Y h:i A" }}</td></tr>
+          <tr><th>Last Updated</th><td>{{ object.updated_at|date:"M d, Y h:i A" }}</td></tr>
         </tbody>
       </table>
 
       <!-- Attachments Section -->
       <h5 class="mt-4">Attachments</h5>
-      {% if object.images.all %}
+      {% if object.images.exists %}
         <div class="row">
           {% for image in object.images.all %}
             <div class="col-md-3 col-sm-4 col-6 mb-3">
@@ -99,7 +81,7 @@
             </button>
           </form>
         {% endif %}
-        <a href="{% url 'tracker_list' %}" class="btn btn-sm btn-outline-secondary">Back</a>
+        <a href="{% url 'all_issues' %}" class="btn btn-sm btn-outline-secondary">Back to Issues</a>
       </div>
     </div>
 

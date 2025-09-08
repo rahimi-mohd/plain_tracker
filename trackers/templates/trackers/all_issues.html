@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}All Issues{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-dark mb-0">All Issues</h3>
+
+  <!-- Filter buttons using HTMX -->
+  <div class="btn-group" role="group">
+    <button class="btn btn-primary" 
+            hx-get="{% url 'all_issues' %}?filter=all" 
+            hx-target="#task-list" 
+            hx-swap="innerHTML">All Tasks</button>
+    <button class="btn btn-secondary" 
+            hx-get="{% url 'all_issues' %}?filter=my" 
+            hx-target="#task-list" 
+            hx-swap="innerHTML">My Tasks</button>
+    <button class="btn btn-dark" 
+            hx-get="{% url 'all_issues' %}?filter=dropped" 
+            hx-target="#task-list" 
+            hx-swap="innerHTML">Dropped</button>
+  </div>
+</div>
+
+<!-- Container for tasks -->
+<div id="task-list">
+  {% include "trackers/partials/task_list_partial.html" %}
+</div>
+{% endblock %}

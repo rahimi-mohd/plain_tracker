@@ -12,7 +12,8 @@
         {% if user.is_authenticated %}
             <p class="mb-4">Hi <span class="fw-bold">{{ user.username }}</span>! Ready to track some issues?</p>
             <div class="d-flex justify-content-center gap-2 flex-wrap">
-                <a href="{% url 'tracker_list' %}" class="btn btn-primary btn-lg">View Issues</a>
+                <!-- Updated link to consolidated All Issues page -->
+                <a href="{% url 'all_issues' %}" class="btn btn-primary btn-lg">View Issues</a>
                 <a href="{% url 'tracker_new' %}" class="btn btn-outline-primary btn-lg">Create New Issue</a>
             </div>
         {% else %}
