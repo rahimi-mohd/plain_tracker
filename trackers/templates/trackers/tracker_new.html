@@ -15,17 +15,10 @@
       <!-- Main tracker form -->
       {{ form|crispy }}
 
-      <!-- Image uploads -->
+      <!-- Single multi-file upload -->
       <h5 class="mt-4">Upload Images</h5>
-      {{ image_formset.management_form }}
-      <div class="row">
-        {% for image_form in image_formset %}
-          <div class="col-md-4 mb-3">
-            <div class="border rounded p-2">
-              {{ image_form|crispy }}
-            </div>
-          </div>
-        {% endfor %}
+      <div class="border rounded p-2 mb-3">
+        {{ image_form.images|as_crispy_field }}
       </div>
 
       <!-- Buttons -->

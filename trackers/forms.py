@@ -28,3 +28,24 @@ TrackerImageFormSet = modelformset_factory(
     extra=3,
     can_delete=True,
 )
+
+
+class MultiFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class ImageUploadForm(forms.Form):
+    images = forms.FileField(
+        widget=MultiFileInput(attrs={"class": "form-control"}),
+        required=False,
+        label="Upload Images",
+        help_text="You can attach max of 5 images",
+    )
+
+    def clean_images(self):
+        files = self.files.getlist("images")
+        if len(files) > 5:
+            raise forms.ValidationError(
+                "You can upload a maximum of 5 images at a time."
+            )
+        return files
