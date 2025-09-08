@@ -13,8 +13,9 @@
 {% for bug in tracker_list %}
 <div class="card mb-4 shadow-sm">
   <div class="card-body">
-    <!-- Title -->
+    <!-- Title with Tracker ID -->
     <h5 class="card-title">
+      <span class="badge bg-secondary me-2">{{ bug.tracker_id }}</span>
       <a href="{{ bug.get_absolute_url }}" class="fw-bold text-decoration-none">
         {{ bug.title|title }}
       </a>
@@ -39,7 +40,7 @@
         <span class="badge bg-primary">{{ bug.get_status_display }}</span>
       {% elif bug.status == "done" %}
         <span class="badge bg-success">{{ bug.get_status_display }}</span>
-      {% elif bug.status == "dropped" %}
+      {% elif bug.status == "drop" %}
         <span class="badge bg-dark">{{ bug.get_status_display }}</span>
       {% else %}
         <span class="badge bg-secondary">{{ bug.get_status_display }}</span>
