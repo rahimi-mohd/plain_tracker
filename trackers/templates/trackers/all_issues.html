@@ -1,43 +1,99 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}All Issues{% endblock %}
-
 {% block main %}
-<div class="container my-5">
-    <h1 class="mb-4">All Issues</h1>
+<div class="container mt-4">
+  <h1 class="mb-4">
+    {% if filter_type == "all" %}
+      All Issues
+    {% elif filter_type == "my" %}
+      My Issues
+    {% elif filter_type == "done" %}
+      Done Issues
+    {% elif filter_type == "dropped" %}
+      Dropped Issues
+    {% endif %}
+  </h1>
 
-    <!-- Filter Buttons -->
-    <div class="btn-group mb-4" role="group">
-        <button class="btn btn-primary"
-                hx-get="{% url 'all_issues' %}?filter=all"
-                hx-target="#task-list"
-                hx-swap="innerHTML">
-            All Tasks
-        </button>
-        <button class="btn btn-secondary"
-                hx-get="{% url 'all_issues' %}?filter=my"
-                hx-target="#task-list"
-                hx-swap="innerHTML">
-            My Tasks
-        </button>
-        <button class="btn btn-success"
-                hx-get="{% url 'all_issues' %}?filter=done"
-                hx-target="#task-list"
-                hx-swap="innerHTML">
-            Done
-        </button>
-        <button class="btn btn-dark"
-                hx-get="{% url 'all_issues' %}?filter=dropped"
-                hx-target="#task-list"
-                hx-swap="innerHTML">
-            Dropped
-        </button>
+  <!-- Filter buttons + Search bar -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="btn-group" role="group" id="filter-buttons">
+      <button class="btn btn-outline-primary"
+              data-filter="all"
+              hx-get="{% url 'all_issues' %}?filter=all"
+              hx-target="#task-list"
+              hx-swap="innerHTML">All Tasks</button>
+
+      <button class="btn btn-outline-primary"
+              data-filter="my"
+              hx-get="{% url 'all_issues' %}?filter=my"
+              hx-target="#task-list"
+              hx-swap="innerHTML">My Tasks</button>
+
+      <button class="btn btn-outline-primary"
+              data-filter="done"
+              hx-get="{% url 'all_issues' %}?filter=done"
+              hx-target="#task-list"
+              hx-swap="innerHTML">Done</button>
+
+      <button class="btn btn-outline-primary"
+              data-filter="dropped"
+              hx-get="{% url 'all_issues' %}?filter=dropped"
+              hx-target="#task-list"
+              hx-swap="innerHTML">Dropped</button>
     </div>
 
-    <!-- Task List -->
-    <div id="task-list">
-        {% include "trackers/partials/task_list_partial.html" %}
-    </div>
+    <!-- Live Search Bar -->
+    <form method="get" class="d-flex ms-3"
+          hx-get="{% url 'all_issues' %}?filter={{ filter_type }}"
+          hx-target="#task-list"
+          hx-swap="innerHTML">
+      <input type="hidden" name="filter" value="{{ filter_type }}">
+      <input type="text"
+             name="q"
+             value="{{ search_query }}"
+             class="form-control"
+             placeholder="Search by ID or Title"
+             hx-get="{% url 'all_issues' %}?filter={{ filter_type }}"
+             hx-trigger="keyup changed delay:500ms"
+             hx-target="#task-list"
+             hx-swap="innerHTML">
+
+      <button type="submit" class="btn btn-outline-primary ms-2">Search</button>
+    </form>
+  </div>
+
+  <!-- Task list -->
+  <div id="task-list">
+    {% include "trackers/partials/task_list_partial.html" %}
+  </div>
 </div>
+
+<!-- Highlight active tab -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const filterType = "{{ filter_type }}"; // from context
+    const buttons = document.querySelectorAll("#filter-buttons button");
+
+    buttons.forEach(btn => {
+      if (btn.dataset.filter === filterType) {
+        btn.classList.remove("btn-outline-primary");
+        btn.classList.add("btn-primary");
+      } else {
+        btn.classList.remove("btn-primary");
+        btn.classList.add("btn-outline-primary");
+      }
+
+      // Add click listener to highlight on client-side
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => {
+          b.classList.remove("btn-primary");
+          b.classList.add("btn-outline-primary");
+        });
+        btn.classList.remove("btn-outline-primary");
+        btn.classList.add("btn-primary");
+      });
+    });
+  });
+</script>
 {% endblock %}

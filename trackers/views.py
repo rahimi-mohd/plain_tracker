@@ -156,38 +156,40 @@ class AllIssuesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter_type = self.request.GET.get("filter", "all")
+        search_query = self.request.GET.get("q", "")
 
+        # Base queryset
         if filter_type == "my":
-            # Show only my active tasks (exclude done & dropped)
-            context["tracker_list"] = Tracker.objects.filter(
+            qs = Tracker.objects.filter(
                 Q(author=self.request.user) | Q(assigned_to=self.request.user)
             ).exclude(status__in=["drop", "done"])
 
         elif filter_type == "dropped":
-            # Show dropped tasks
             qs = Tracker.objects.filter(status="drop")
             if not self.request.user.is_staff:
                 qs = qs.filter(
                     Q(author=self.request.user) | Q(assigned_to=self.request.user)
                 )
-            context["tracker_list"] = qs
 
         elif filter_type == "done":
-            # Show completed tasks
             qs = Tracker.objects.filter(status="done")
             if not self.request.user.is_staff:
                 qs = qs.filter(
                     Q(author=self.request.user) | Q(assigned_to=self.request.user)
                 )
-            context["tracker_list"] = qs
 
         else:
-            # Default "all" = only active tasks (exclude done & dropped)
-            context["tracker_list"] = Tracker.objects.exclude(
-                status__in=["drop", "done"]
+            qs = Tracker.objects.exclude(status__in=["drop", "done"])
+
+        # Apply search filter (ID or Title)
+        if search_query:
+            qs = qs.filter(
+                Q(tracker_id__icontains=search_query) | Q(title__icontains=search_query)
             )
 
-        # HTMX partial rendering
+        context["tracker_list"] = qs
+        context["search_query"] = search_query  # keep search in the box
+
         if self.request.headers.get("HX-Request"):
             self.template_name = "trackers/partials/task_list_partial.html"
 
