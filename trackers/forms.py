@@ -12,7 +12,7 @@ class CommentForm(forms.ModelForm):
 class TrackerForm(forms.ModelForm):
     class Meta:
         model = Tracker
-        fields = ["title", "body", "priority"]
+        fields = ["title", "body", "priority", "assigned_to"]
 
 
 class TrackerImageForm(forms.ModelForm):
