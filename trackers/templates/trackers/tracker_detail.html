@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}{{ object.title }}{% endblock %}
+{% block title %}Issues {{ object.id }} - {{ object.title|title }}{% endblock %}
 
 {% block main %}
 <div class="container my-4">
@@ -21,7 +21,9 @@
             <th class="w-25">Priority</th>
             <td>
               <span class="badge 
-                  {% if object.priority == 'high' %}bg-danger{% elif object.priority == 'normal' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                  {% if object.priority == 'high' %}bg-danger
+                  {% elif object.priority == 'normal' %}bg-warning text-dark
+                  {% else %}bg-success{% endif %}">
                 {{ object.get_priority_display }}
               </span>
             </td>
@@ -30,7 +32,10 @@
             <th>Status</th>
             <td>
               <span class="badge 
-                  {% if object.status == 'in_progress' %}bg-primary{% elif object.status == 'done' %}bg-success{% elif object.status == 'drop' %}bg-dark{% else %}bg-secondary{% endif %}">
+                  {% if object.status == 'in_progress' %}bg-primary
+                  {% elif object.status == 'done' %}bg-success
+                  {% elif object.status == 'drop' %}bg-dark
+                  {% else %}bg-secondary{% endif %}">
                 {{ object.get_status_display }}
               </span>
             </td>
@@ -97,7 +102,15 @@
               <span class="fw-bold">{{ comment.author.username }}</span>
               <small class="text-muted">{{ comment.created_at|date:"M d, Y h:i A" }}</small>
             </div>
-            <p class="mb-0">{{ comment.body }}</p>
+            <p class="mb-1">{{ comment.body }}</p>
+
+            {% if comment.image %}
+              <img src="{{ comment.image.url }}" alt="Comment image"
+                   class="img-fluid rounded shadow-sm mt-2 attachment-img"
+                   style="max-width: 250px; cursor: pointer;"
+                   data-index="{{ forloop.counter0 }}"
+                   onclick="openLightbox(this.dataset.index)">
+            {% endif %}
           </div>
         {% empty %}
           <p class="text-muted fst-italic">No comments yet.</p>
@@ -106,7 +119,7 @@
 
       <!-- Add Comment Form -->
       <h6 class="fw-bold">Add a comment</h6>
-      <form action="" method="post" class="mt-2">
+      <form action="" method="post" enctype="multipart/form-data" class="mt-2">
         {% csrf_token %}
         {{ form|crispy }}
         <button class="btn btn-success btn-sm mt-2" type="submit">Save</button>

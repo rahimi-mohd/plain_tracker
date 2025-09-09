@@ -1,7 +1,7 @@
-{% comment %}Partial for tracker items with tracker ID{% endcomment %}
+{% comment %}Compact dashboard-style tracker list with lightbox integration{% endcomment %}
 
 {% if tracker_list %}
-    {% for bug in tracker_list %}
+  {% for bug in tracker_list %}
     <div class="card mb-4 shadow-sm">
       <div class="card-body">
         <!-- Title with Tracker ID -->
@@ -12,12 +12,11 @@
           </a>
         </h5>
 
-        <!-- Description -->
-        <p class="card-text text-muted">{{ bug.body|truncatechars:100 }}</p>
+        <!-- Short Description -->
+        <p class="card-text text-muted">{{ bug.body|truncatechars:120 }}</p>
 
         <!-- Metadata -->
         <div class="mb-2">
-          <!-- Priority Badge -->
           {% if bug.priority == "high" %}
             <span class="badge bg-danger">{{ bug.get_priority_display }}</span>
           {% elif bug.priority == "normal" %}
@@ -26,7 +25,6 @@
             <span class="badge bg-success">{{ bug.get_priority_display }}</span>
           {% endif %}
 
-          <!-- Status Badge -->
           {% if bug.status == "in_progress" %}
             <span class="badge bg-primary">{{ bug.get_status_display }}</span>
           {% elif bug.status == "done" %}
@@ -38,38 +36,55 @@
           {% endif %}
         </div>
 
-        <small class="text-muted">
+        <small class="text-muted d-block mb-2">
           Author: {{ bug.author.username }} |
           Assigned To: {{ bug.assigned_to.username|default:"-" }} |
-          Created: {{ bug.date|date:"M d, Y H:i" }} |
           Updated: {{ bug.updated_at|date:"M d, Y H:i" }}
         </small>
 
-        <hr>
-
-        <!-- Comments -->
-        <h6 class="fw-bold mb-2">Comments</h6>
-        {% for comment in bug.comment_set.all %}
-          <div class="mb-2">
-            <span class="fw-bold">{{ comment.author.username }}</span>
-            <small class="text-muted">· {{ comment.created_at|date:"M d, Y H:i" }}</small><br>
-            {{ comment.body }}
+        <!-- Attachments Preview (max 2 thumbnails) -->
+        {% if bug.images.exists %}
+          <div class="d-flex gap-2 mb-2">
+            {% for image in bug.images.all|slice:":2" %}
+              <img src="{{ image.image.url }}" alt="Attachment"
+                   class="img-thumbnail attachment-img"
+                   style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                   data-index="{{ forloop.counter0 }}"
+                   onclick="openLightbox(this.dataset.index)">
+            {% endfor %}
+            {% if bug.images.count > 2 %}
+              <span class="text-muted align-self-center">+{{ bug.images.count|add:'-2' }} more</span>
+            {% endif %}
           </div>
-        {% empty %}
-          <p class="text-muted">No comments yet.</p>
-        {% endfor %}
+        {% endif %}
+
+        <!-- Latest Comments Preview -->
+        <div class="mb-2">
+          <h6 class="fw-bold small mb-1">Latest Comments</h6>
+          {% for comment in bug.comment_set.all|slice:":2" %}
+            <div class="border-start ps-2 mb-1 small">
+              <span class="fw-bold">{{ comment.author.username }}</span>:
+              {{ comment.body|truncatechars:60 }}
+            </div>
+          {% empty %}
+            <p class="text-muted small fst-italic">No comments yet.</p>
+          {% endfor %}
+          {% if bug.comment_set.count > 2 %}
+            <a href="{{ bug.get_absolute_url }}" class="small">View all comments →</a>
+          {% endif %}
+        </div>
 
         <!-- Actions -->
         <div class="mt-3">
           {% if bug.author.pk == request.user.pk %}
-            <a href="{% url 'tracker_edit' bug.pk %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'tracker_delete' bug.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            <a href="{% url 'tracker_edit' bug.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <a href="{% url 'tracker_delete' bug.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
           {% endif %}
-          <a href="{{ bug.get_absolute_url }}" class="btn btn-sm btn-secondary">New Comment</a>
+          <a href="{{ bug.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">Details</a>
         </div>
       </div>
     </div>
-    {% endfor %}
+  {% endfor %}
 {% else %}
   <p class="text-center text-muted">No issues found.</p>
 {% endif %}

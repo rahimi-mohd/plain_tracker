@@ -1,0 +1,7 @@
+<div class="comment">
+  <p><strong>{{ comment.author }}</strong>: {{ comment.body }}</p>
+  {% if comment.image %}
+    <img src="{{ comment.image.url }}" alt="comment image" class="mt-2" style="max-width:200px; border-radius:8px;">
+  {% endif %}
+  <small>{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+</div>

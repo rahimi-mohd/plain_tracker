@@ -25,7 +25,7 @@ def add_comment(request, pk):
     tracker = get_object_or_404(Tracker, pk=pk)
 
     if request.method == "POST":
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)  # accept files
         if form.is_valid():
             comment = form.save(commit=False)
             comment.tracker = tracker

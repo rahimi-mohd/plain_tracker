@@ -6,7 +6,7 @@ from .models import Comment, Tracker, TrackerImage
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ("body",)
+        fields = ("body", "image")
 
 
 class TrackerForm(forms.ModelForm):

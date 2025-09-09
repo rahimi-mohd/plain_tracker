@@ -1,0 +1,5 @@
+<form method="post" enctype="multipart/form-data" hx-post="{% url 'add_comment' tracker.pk %}" hx-target="#comments" hx-swap="afterbegin">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Add Comment</button>
+</form>
