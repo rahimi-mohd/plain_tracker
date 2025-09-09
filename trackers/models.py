@@ -5,6 +5,9 @@ from django.urls import reverse
 
 # Create your models here.
 class Tracker(models.Model):
+    class Meta:
+        ordering = ["-date"]
+
     PRIORITY_CHOICES = [
         ("low", "Low"),
         ("normal", "Normal"),
