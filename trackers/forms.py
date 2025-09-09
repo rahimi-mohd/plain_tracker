@@ -1,6 +1,5 @@
 from django import forms
 from django.forms import modelformset_factory
-
 from .models import Comment, Tracker, TrackerImage
 
 
@@ -22,30 +21,10 @@ class TrackerImageForm(forms.ModelForm):
         fields = ["image"]
 
 
+# A formset to handle multiple image uploads
 TrackerImageFormSet = modelformset_factory(
     TrackerImage,
     form=TrackerImageForm,
-    extra=3,
-    can_delete=True,
+    extra=3,  # show 3 empty image fields by default
+    can_delete=True,  # allow user to remove images
 )
-
-
-class MultiFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
-class ImageUploadForm(forms.Form):
-    images = forms.FileField(
-        widget=MultiFileInput(attrs={"class": "form-control"}),
-        required=False,
-        label="Upload Images",
-        help_text="You can attach max of 5 images",
-    )
-
-    def clean_images(self):
-        files = self.files.getlist("images")
-        if len(files) > 5:
-            raise forms.ValidationError(
-                "You can upload a maximum of 5 images at a time."
-            )
-        return files

@@ -5,7 +5,7 @@
 
 {% block main %}
 <div class="container my-4">
-    <h2 class="mb-4">Create New Tracker</h2>
+    <h2 class="mb-4">New Task</h2>
 
     <div class="card shadow-sm rounded-3">
         <div class="card-body">
@@ -18,11 +18,16 @@
                     {{ form|crispy }}
                 </div>
 
-                <!-- Image Upload -->
+                <!-- Image Uploads -->
                 <h5 class="mt-4">Attachments</h5>
                 <p class="text-muted fst-italic">You can upload multiple images.</p>
                 <div class="border rounded p-3 mb-3">
-                    {{ image_form.images|as_crispy_field }}
+                    {{ image_formset.management_form }}   {# required for formsets! #}
+                    {% for subform in image_formset %}
+                        <div class="mb-2">
+                            {{ subform.image|as_crispy_field }}
+                        </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Action Buttons -->

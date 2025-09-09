@@ -15,7 +15,7 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 
 from .models import Tracker, TrackerImage
-from .forms import CommentForm, TrackerForm, ImageUploadForm
+from .forms import CommentForm, TrackerForm, TrackerImageFormSet
 
 
 # ----------------------------
@@ -94,38 +94,39 @@ class TrackerCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["image_form"] = (
-            ImageUploadForm(self.request.POST, self.request.FILES)
-            if self.request.POST
-            else ImageUploadForm()
-        )
+        if self.request.POST:
+            context["image_formset"] = TrackerImageFormSet(
+                self.request.POST,
+                self.request.FILES,
+                queryset=TrackerImage.objects.none(),
+            )
+        else:
+            context["image_formset"] = TrackerImageFormSet(
+                queryset=TrackerImage.objects.none()
+            )
         return context
 
     def form_valid(self, form):
+        context = self.get_context_data()
+        image_formset = context["image_formset"]
+
         form.instance.author = self.request.user
         form.instance.status = "in_progress"
 
-        image_form = ImageUploadForm(self.request.POST, self.request.FILES)
-
-        if form.is_valid() and image_form.is_valid():
+        if form.is_valid() and image_formset.is_valid():
             self.object = form.save()
-            images = self.request.FILES.getlist("images")
-            for image in images:
-                TrackerImage.objects.create(tracker=self.object, image=image)
+
+            # Save images
+            for image_form in image_formset:
+                if image_form.cleaned_data.get("image"):
+                    TrackerImage.objects.create(
+                        tracker=self.object, image=image_form.cleaned_data["image"]
+                    )
 
             messages.success(self.request, "Task created successfully!")
             return redirect(self.object.get_absolute_url())
         else:
-            if image_form.errors.get("images"):
-                for err in image_form.errors["images"]:
-                    messages.error(self.request, err)
-            for field, errors in form.errors.items():
-                for err in errors:
-                    messages.error(self.request, f"{field}: {err}")
-
-            context = self.get_context_data(form=form)
-            context["image_form"] = image_form
-            return self.render_to_response(context)
+            return self.render_to_response(self.get_context_data(form=form))
 
 
 class TrackerUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
