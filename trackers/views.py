@@ -158,18 +158,34 @@ class AllIssuesView(LoginRequiredMixin, TemplateView):
         filter_type = self.request.GET.get("filter", "all")
 
         if filter_type == "my":
+            # Show only my active tasks (exclude done & dropped)
             context["tracker_list"] = Tracker.objects.filter(
                 Q(author=self.request.user) | Q(assigned_to=self.request.user)
-            ).exclude(status="drop")
+            ).exclude(status__in=["drop", "done"])
+
         elif filter_type == "dropped":
+            # Show dropped tasks
             qs = Tracker.objects.filter(status="drop")
             if not self.request.user.is_staff:
                 qs = qs.filter(
                     Q(author=self.request.user) | Q(assigned_to=self.request.user)
                 )
             context["tracker_list"] = qs
+
+        elif filter_type == "done":
+            # Show completed tasks
+            qs = Tracker.objects.filter(status="done")
+            if not self.request.user.is_staff:
+                qs = qs.filter(
+                    Q(author=self.request.user) | Q(assigned_to=self.request.user)
+                )
+            context["tracker_list"] = qs
+
         else:
-            context["tracker_list"] = Tracker.objects.exclude(status="drop")
+            # Default "all" = only active tasks (exclude done & dropped)
+            context["tracker_list"] = Tracker.objects.exclude(
+                status__in=["drop", "done"]
+            )
 
         # HTMX partial rendering
         if self.request.headers.get("HX-Request"):

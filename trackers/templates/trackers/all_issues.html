@@ -1,30 +1,43 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}All Tasks{% endblock %}
+{% block title %}All Issues{% endblock %}
 
 {% block main %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h3 class="fw-bold text-dark mb-0">All Tasks</h3>
+<div class="container my-5">
+    <h1 class="mb-4">All Issues</h1>
 
-  <!-- Filter buttons using HTMX -->
-  <div class="btn-group" role="group">
-    <button class="btn btn-primary" 
-            hx-get="{% url 'all_issues' %}?filter=all" 
-            hx-target="#task-list" 
-            hx-swap="innerHTML">All Tasks</button>
-    <button class="btn btn-secondary" 
-            hx-get="{% url 'all_issues' %}?filter=my" 
-            hx-target="#task-list" 
-            hx-swap="innerHTML">My Tasks</button>
-    <button class="btn btn-dark" 
-            hx-get="{% url 'all_issues' %}?filter=dropped" 
-            hx-target="#task-list" 
-            hx-swap="innerHTML">Dropped</button>
-  </div>
-</div>
+    <!-- Filter Buttons -->
+    <div class="btn-group mb-4" role="group">
+        <button class="btn btn-primary"
+                hx-get="{% url 'all_issues' %}?filter=all"
+                hx-target="#task-list"
+                hx-swap="innerHTML">
+            All Tasks
+        </button>
+        <button class="btn btn-secondary"
+                hx-get="{% url 'all_issues' %}?filter=my"
+                hx-target="#task-list"
+                hx-swap="innerHTML">
+            My Tasks
+        </button>
+        <button class="btn btn-success"
+                hx-get="{% url 'all_issues' %}?filter=done"
+                hx-target="#task-list"
+                hx-swap="innerHTML">
+            Done
+        </button>
+        <button class="btn btn-dark"
+                hx-get="{% url 'all_issues' %}?filter=dropped"
+                hx-target="#task-list"
+                hx-swap="innerHTML">
+            Dropped
+        </button>
+    </div>
 
-<!-- Container for tasks -->
-<div id="task-list">
-  {% include "trackers/partials/task_list_partial.html" %}
+    <!-- Task List -->
+    <div id="task-list">
+        {% include "trackers/partials/task_list_partial.html" %}
+    </div>
 </div>
 {% endblock %}
